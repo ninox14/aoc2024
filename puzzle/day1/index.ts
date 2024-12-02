@@ -1,10 +1,6 @@
-const readInput = async () => {
-  const file = Bun.file(Bun.resolveSync('./input.txt', import.meta.dir));
+import { readInput } from '../../lib';
 
-  return await file.text();
-};
-
-const parseInput = (input: string) => {
+export const parseInput = (input: string) => {
   return input.split('\n').reduce(
     (acc, row) => {
       const [num1, num2] = row.split('   ');
@@ -16,7 +12,7 @@ const parseInput = (input: string) => {
   );
 };
 
-const solve = (idLists: [number[], number[]]) => {
+const solve1 = (idLists: [number[], number[]]) => {
   const [list1, list2] = idLists.map((list) => list.sort((a, b) => a - b));
 
   let cummulativeDistance = 0;
@@ -28,4 +24,22 @@ const solve = (idLists: [number[], number[]]) => {
   return cummulativeDistance;
 };
 
-console.log(solve(parseInput(await readInput())));
+const solve2 = ([list1, list2]: [number[], number[]]) => {
+  const appearanceDictionary = list2.reduce((acc: number[], num) => {
+    if (typeof acc[num] !== 'number') {
+      acc[num] = 1;
+      return acc;
+    }
+
+    acc[num] += 1;
+    return acc;
+  }, []);
+  let similarityScore = 0;
+
+  list1.forEach((num) => {
+    similarityScore += (appearanceDictionary[num] ?? 0) * num;
+  });
+  return similarityScore;
+};
+
+console.log(solve2(parseInput(await readInput(import.meta.dir))));
